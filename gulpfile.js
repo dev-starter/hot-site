@@ -35,14 +35,15 @@ function addAssetToManifest(stream) {
 
 gulp.task(
     'sass',
-    'Compile sass into minified CSS files and copy to assets folder', function() {
+    'Compile sass into minified CSS files and copy to assets folder', ['clean:css'],
+    function() {
     var stream = merge2(
     gulp.src(paths.sass + '/*.scss')
       .pipe($.include())
     )
     .pipe($.sass())
     .pipe($.csso())
-    .pipe($.concat('app.css'))
+    .pipe($.concat('application.css'))
     .pipe($.hash(hashOptions))
     .pipe(gulp.dest(paths.site));
 
@@ -54,17 +55,56 @@ gulp.task(
 
 gulp.task(
     'js',
-    'Include JS files, put hash on file names and copy to assets folder',
+    'Include JS files, put hash on file names and copy to assets folder', ['clean:js'],
     function() {
     var stream = merge2(
       gulp.src(paths.js + '/*.js')
         .pipe($.include())
         .pipe($.babel(babelOptions))
       )
-      .pipe($.concat('app.js'))
+      .pipe($.concat('application.js'))
       .pipe($.uglify())
       .pipe($.hash(hashOptions))
       .pipe(gulp.dest(paths.site));
+
+    addAssetToManifest(stream);
+
+    return stream;
+  }
+);
+
+gulp.task(
+    'js:app',
+    'Include JS files, put hash on file names and copy to assets folder', ['clean:js'],
+    function() {
+    var stream = merge2(
+      gulp.src(paths.js + '/*.js')
+        .pipe($.include())
+        .pipe($.babel(babelOptions))
+      )
+      .pipe($.concat('application.js'))
+      .pipe($.hash(hashOptions))
+      .pipe(gulp.dest(paths.site));
+
+    addAssetToManifest(stream);
+
+    return stream;
+  }
+);
+
+gulp.task(
+    'sass:app',
+    'Compile sass into minified CSS files and copy to assets folder', ['clean:css'],
+    function() {
+    var stream = merge2(
+    gulp.src(paths.sass + '/*.scss')
+      .pipe($.include())
+    )
+    .pipe($.sass())
+    .pipe($.csso())
+    .pipe($.concat('application.css'))
+    .pipe($.hash(hashOptions))
+    .pipe(gulp.dest(paths.site));
 
     addAssetToManifest(stream);
 
@@ -77,49 +117,34 @@ gulp.task('clean:css', 'Clean CSS assets', function() {
 });
 
 gulp.task('clean:js', 'Clean JS assets', function() {
-  return del(paths.assets + '/*.js');
+  return del(paths.site + '/*.js');
 });
 
 gulp.task('clean', ['clean:css', 'clean:js']);
-//
-// gulp.task(
-//   'js:app',
-//   'Include JS files, put hash on file names and copy to assets folder', ['clean:js'],
-//   function() {
-//     var stream = gulp.src(paths.js + '/*.js')
-//       .pipe($.include())
-//       .pipe($.hash(hashOptions))
-//       .pipe(gulp.dest(paths.assets));
-//
-//     addAssetToManifest(stream);
-//
-//     return stream;
-//   }
-// );
 
-// gulp.task(
-//   'serve',
-//   'Provide a node server with browser sync and rerun tasks when a file changes', ['sass', 'js:app'],
-//   function() {
-//     browserSync.init([
-//       paths.assets + '/**/*',
-//       paths.php
-//     ], {
-//       proxy: 'alien-code.dev',
-//       notify: false
-//     });
-//
-//     gulp.watch(paths.sass + '/**/*.scss', ['sass']);
-//     gulp.watch(paths.js + '/**/*.js', [
-//       'clean:js',
-//       'js:app'
-//     ]);
-//
-//     gulp.watch(paths.php, function(event) {
-//       browserSync.reload(event.path);
-//     });
-//   }
-// );
+gulp.task(
+  'serve',
+  'Provide a node server with browser sync and rerun tasks when a file changes', ['sass', 'js:app'],
+  function() {
+    browserSync.init([
+      paths.assets + '/**/*',
+      paths.php
+    ], {
+      proxy: 'alien-code.dev',
+      notify: false
+    });
+
+    gulp.watch(paths.sass + '/**/*.scss', ['sass']);
+    gulp.watch(paths.js + '/**/*.js', [
+      'clean:js',
+      'js:app'
+    ]);
+
+    gulp.watch(paths.php, function(event) {
+      browserSync.reload(event.path);
+    });
+  }
+);
 //
 // gulp.task('build', ['sass', 'js']);
 // gulp.task('default', ['build']);
