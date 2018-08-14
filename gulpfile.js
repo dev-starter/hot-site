@@ -1,5 +1,5 @@
 // Dependencies
-var gulp = require('gulp');
+var gulp = require('gulp-help')(require('gulp'));
 var browserSync = require('browser-sync');
 var del = require('del');
 var merge2 = require('merge2');
@@ -10,7 +10,7 @@ var paths = {
   js: './app/assets/js',
   images: './app/assets/images',
   sass: './app/assets/scss',
-  styles: './site/styles'
+  site: './site'
 };
 
 // Hash options
@@ -33,12 +33,18 @@ function addAssetToManifest(stream) {
     }));
 }
 
-gulp.task('sass', function() {
-    var stream = gulp.src(paths.sass + '/*.scss')
-      .pipe($.sass())
-      .pipe($.hash(hashOptions))
-      .pipe($.csso())
-      .pipe(gulp.dest(paths.styles));
+gulp.task(
+    'sass',
+    'Compile sass into minified CSS files and copy to assets folder', function() {
+    var stream = merge2(
+    gulp.src(paths.sass + '/*.scss')
+      .pipe($.include())
+    )
+    .pipe($.sass())
+    .pipe($.csso())
+    .pipe($.concat('app.css'))
+    .pipe($.hash(hashOptions))
+    .pipe(gulp.dest(paths.site));
 
     addAssetToManifest(stream);
 
@@ -46,17 +52,35 @@ gulp.task('sass', function() {
   }
 );
 
+gulp.task(
+    'js',
+    'Include JS files, put hash on file names and copy to assets folder',
+    function() {
+    var stream = merge2(
+      gulp.src(paths.js + '/*.js')
+        .pipe($.include())
+        .pipe($.babel(babelOptions))
+      )
+      .pipe($.concat('app.js'))
+      .pipe($.uglify())
+      .pipe($.hash(hashOptions))
+      .pipe(gulp.dest(paths.site));
 
-// gulp.task('clean:css', 'Clean CSS assets', function() {
-//   return del(paths.assets + '/*.css');
-// });
-//
-// gulp.task('clean:js', 'Clean JS assets', function() {
-//   return del(paths.assets + '/*.js');
-// });
-//
-// gulp.task('clean', ['clean:css', 'clean:js']);
+    addAssetToManifest(stream);
 
+    return stream;
+  }
+);
+
+gulp.task('clean:css', 'Clean CSS assets', function() {
+  return del(paths.site + '/*.css');
+});
+
+gulp.task('clean:js', 'Clean JS assets', function() {
+  return del(paths.assets + '/*.js');
+});
+
+gulp.task('clean', ['clean:css', 'clean:js']);
 //
 // gulp.task(
 //   'js:app',
@@ -72,30 +96,7 @@ gulp.task('sass', function() {
 //     return stream;
 //   }
 // );
-//
-// gulp.task(
-//   'js',
-//   'Include and compule JS files, minify then, put hash on file names and copy to assets folder', ['clean:js'],
-//   function() {
-//     var stream;
-//
-//     stream = merge2(
-//         gulp.src(paths.appJs).pipe($.include()),
-//         gulp.src(paths.foundationJs)
-//         .pipe($.include())
-//         .pipe($.babel(babelOptions))
-//       )
-//       .pipe($.concat('app.js'))
-//       .pipe($.uglify())
-//       .pipe($.hash(hashOptions))
-//       .pipe(gulp.dest(paths.assets));
-//
-//     addAssetToManifest(stream);
-//
-//     return stream;
-//   }
-// );
-//
+
 // gulp.task(
 //   'serve',
 //   'Provide a node server with browser sync and rerun tasks when a file changes', ['sass', 'js:app'],

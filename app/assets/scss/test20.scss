@@ -1,0 +1,17 @@
+$color: black;
+
+body {
+  color: $color;
+}
+
+@mixin transform($property) {
+  -webkit-transform: $property;
+      -ms-transform: $property;
+          transform: $property;
+}
+
+$color: black;
+
+body {
+  color: $color;
+}
