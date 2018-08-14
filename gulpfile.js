@@ -35,7 +35,7 @@ function addAssetToManifest(stream) {
 
 gulp.task(
     'sass',
-    'Compile sass into minified CSS files and copy to assets folder', ['clean:css'],
+    'Compile sass into minified CSS files and copy to site folder', ['clean:css'],
     function() {
     var stream = merge2(
     gulp.src(paths.sass + '/*.scss')
@@ -55,7 +55,7 @@ gulp.task(
 
 gulp.task(
     'js',
-    'Include JS files, put hash on file names and copy to assets folder', ['clean:js'],
+    'Include JS files, put hash on file names and copy to site folder', ['clean:js'],
     function() {
     var stream = merge2(
       gulp.src(paths.js + '/*.js')
@@ -75,7 +75,7 @@ gulp.task(
 
 gulp.task(
     'js:app',
-    'Include JS files, put hash on file names and copy to assets folder', ['clean:js'],
+    'Include JS files, put hash on file names and copy to site folder', ['clean:js'],
     function() {
     var stream = merge2(
       gulp.src(paths.js + '/*.js')
@@ -94,7 +94,7 @@ gulp.task(
 
 gulp.task(
     'sass:app',
-    'Compile sass into minified CSS files and copy to assets folder', ['clean:css'],
+    'Compile sass into CSS files and copy to site folder', ['clean:css'],
     function() {
     var stream = merge2(
     gulp.src(paths.sass + '/*.scss')
@@ -123,28 +123,24 @@ gulp.task('clean:js', 'Clean JS assets', function() {
 gulp.task('clean', ['clean:css', 'clean:js']);
 
 gulp.task(
-  'serve',
-  'Provide a node server with browser sync and rerun tasks when a file changes', ['sass', 'js:app'],
+  'server',
+  'Provide a node server with browser sync and rerun tasks when a file changes', ['sass:app', 'js:app'],
   function() {
     browserSync.init([
-      paths.assets + '/**/*',
-      paths.php
+      paths.site + '/**/*',
     ], {
-      proxy: 'alien-code.dev',
+      proxy: 'hotsite.dev',
       notify: false
     });
 
-    gulp.watch(paths.sass + '/**/*.scss', ['sass']);
-    gulp.watch(paths.js + '/**/*.js', [
-      'clean:js',
-      'js:app'
-    ]);
+    gulp.watch(paths.sass + '/*.scss', ['sass:app']);
+    gulp.watch(paths.js + '/*.js', ['js:app']);
 
-    gulp.watch(paths.php, function(event) {
+    gulp.watch(paths.site, function(event) {
       browserSync.reload(event.path);
     });
   }
 );
-//
-// gulp.task('build', ['sass', 'js']);
-// gulp.task('default', ['build']);
+
+gulp.task('build', ['sass', 'js']);
+gulp.task('default', ['build']);
