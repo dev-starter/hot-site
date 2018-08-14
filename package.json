@@ -1,0 +1,42 @@
+{
+  "name": "hot-site",
+  "version": "1.0.0",
+  "description": "Front end for moip-dev-academy site, this application consumes resources from APIs",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moip-dev-academy/hot-site.git"
+  },
+  "keywords": [
+    "moip",
+    "dev",
+    "academy",
+    "hotsite"
+  ],
+  "author": "Isaac Yung Lopes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moip-dev-academy/hot-site/issues"
+  },
+  "homepage": "https://github.com/moip-dev-academy/hot-site#readme",
+  "devDependencies": {
+    "babel-preset-es2017": "^6.24.1",
+    "browser-sync": "^2.24.6",
+    "del": "^3.0.0",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^3.0.1",
+    "gulp-hash": "^4.2.2",
+    "gulp-help": "^1.6.1",
+    "gulp-include": "^2.3.1",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-sass": "^4.0.1",
+    "gulp-uglify": "^3.0.1",
+    "merge2": "^1.2.2",
+    "node-sass": "^4.9.3"
+  }
+}
