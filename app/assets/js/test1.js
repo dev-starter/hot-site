@@ -1,5 +1,1 @@
-var addAssetToManifest
-
-function test(){
-  return 'status';
-}
+alert('asdasdasd');
