@@ -2,3 +2,4 @@ node_modules
 site
 !.gitignore
 .DS_Store
+asset-hashes.json
