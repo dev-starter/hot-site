@@ -6,8 +6,6 @@ var merge2 = require('merge2');
 var $ = require('gulp-load-plugins')();
 var replace = require('gulp-replace');
 
-var assetHashes = require('./asset-hashes.json');
-
 // var assetHashes = JSON.parse(assetHashes);
 
 // Assets diretories
@@ -29,6 +27,10 @@ var hashOptions = {
 var babelOptions = {
   presets: ['es2017']
 };
+
+function loadAssetHashes() {
+  return require('./asset-hashes.json');
+}
 
 function addAssetToManifest(stream) {
   return stream
@@ -77,16 +79,17 @@ gulp.task(
 );
 
 gulp.task(
-  'html',
-  'Include HTML files, create index and concat partials',
+  'html:app',
+  'Include HTML files, create index and concat partials', [ 'clean:html', 'sass:app', 'js:app'],
   function() {
+    assetHashes2 = loadAssetHashes();
+    console.log(assetHashes2)
+
     var stream = gulp.src(paths.layout + '/application.html')
       .pipe($.concat('index.html'))
-      .pipe(replace('$application.css', assetHashes['application.css']))
-      .pipe(replace('$application.js', assetHashes['application.js']))
+      .pipe(replace('$application.css', assetHashes2['application.css']))
+      .pipe(replace('$application.js', assetHashes2['application.js']))
       .pipe(gulp.dest(paths.site));
-
-      addAssetToManifest(stream);
 
     return stream;
   }
@@ -139,6 +142,10 @@ gulp.task('clean:js', 'Clean JS assets', function() {
   return del(paths.site + '/*.js');
 });
 
+gulp.task('clean:html', 'Clean HTML', function() {
+  return del(paths.site + '/index.html');
+});
+
 gulp.task('clean:hashes', 'Clean asset hashes', function() {
   return del('asset-hashes.json');
 });
@@ -165,6 +172,6 @@ gulp.task(
   }
 );
 
-gulp.task('build', ['clean:hashes', 'sass', 'js', 'html']);
-gulp.task('build:app', ['clean:hashes', 'sass:app', 'js:app', 'html']);
+gulp.task('build', ['html']);
+gulp.task('build:app', ['html:app']);
 gulp.task('default', ['build:app']);
